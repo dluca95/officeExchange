@@ -5,7 +5,6 @@ namespace ExchangeOffice.Application.Models
 {
     public class ExchangeRateModel
     {
-
         public ExchangeRateModel()
         {
             

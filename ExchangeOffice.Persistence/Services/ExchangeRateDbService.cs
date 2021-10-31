@@ -39,12 +39,7 @@ namespace ExchangeOffice.Persistence.Services
             await _appDbContext.SaveChangesAsync();
             
         }
-
-        public void DeleteMany()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public async Task<ExchangeRate> Get(int exchangeRateId)
         {
             return await _appDbContext.CurrencyExchangeRates.FirstAsync(e => e.Id == exchangeRateId);

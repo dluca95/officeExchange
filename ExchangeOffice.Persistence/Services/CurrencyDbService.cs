@@ -38,12 +38,7 @@ namespace ExchangeOffice.Persistence.Services
             
             await _appDbContext.SaveChangesAsync();
         }
-
-        public void DeleteMany()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public async Task<Currency> Get(int currencyId)
         {
             return await _appDbContext.Currencies.FirstAsync(e => e.Id == currencyId);
