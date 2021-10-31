@@ -24,5 +24,12 @@ namespace ExchangeOffice.Controllers
         {
             return await _exchangeRateAppService.Add(model);
         }
+        
+        [HttpPatch]
+        [Route("exchange-rate")]
+        public async Task UpdateExchangeRate([FromBody] ExchangeRateModel model)
+        {
+            await _exchangeRateAppService.Update(model);
+        }
     }
 }

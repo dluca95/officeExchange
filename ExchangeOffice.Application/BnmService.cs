@@ -58,8 +58,9 @@ namespace ExchangeOffice.Application
         
         public async Task<Valute> GetCurrencyByCode(string charCode, DateTime? date = null)
         {
-            var result = await GetCurrenciesForDate(date);
-            return result.FirstOrDefault(r => r.CharCode == charCode);
+            var currencyResult = await GetCurrenciesForDate(date);
+            
+            return currencyResult.FirstOrDefault(r => r.CharCode == charCode);
         }
 
     }

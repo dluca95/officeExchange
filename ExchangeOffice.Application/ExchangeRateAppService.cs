@@ -11,16 +11,12 @@ namespace ExchangeOffice.Application
     {
         private readonly IDbService<ExchangeRate> _exchangeRateDbService;
         private readonly IAppService<CurrencyApiModel> _currencyAppService;
-        private readonly IDbService<Currency> _currencyDbService;
-
 
         public ExchangeRateAppService(IDbService<ExchangeRate> exchangeRateDbService,
-            IAppService<CurrencyApiModel> currencyAppService, IDbService<Currency> currencyDbService
-            )
+            IAppService<CurrencyApiModel> currencyAppService)
         {
             _exchangeRateDbService = exchangeRateDbService;
             _currencyAppService = currencyAppService;
-            _currencyDbService = currencyDbService;
         }
         
         public async Task<ExchangeRateModel> Add(ExchangeRateModel model)
@@ -31,15 +27,21 @@ namespace ExchangeOffice.Application
             }
 
             var currency = await _currencyAppService.Get(model.CurrencyCharCode);
-            
-            var currencyEntity = await _currencyDbService.Get(currency.Id.Value);
+
+            if (model.BuyPrice > (currency.Value + (currency.Value / 100))
+                || model.BuyPrice < (currency.Value - (currency.Value / 100))
+                || model.SellPrice > (currency.Value + (currency.Value/ 100))
+                || model.SellPrice < (currency.Value) - (currency.Value / 100))
+            {
+                throw new ArgumentException("Exchange rate prices are not according to official rates");
+            } 
             
             var newExchangeRate = new ExchangeRate
             {
                 BuyPrice = model.BuyPrice.Value,
                 SellPrice = model.SellPrice.Value,
                 CreatedAt = DateTime.Now,
-                Currency = currencyEntity
+                CurrencyId = currency.Id ?? 0
             };
 
             var result = await _exchangeRateDbService.Add(newExchangeRate);
@@ -48,9 +50,27 @@ namespace ExchangeOffice.Application
             return model;
         }
 
-        public Task Update(ExchangeRateModel model)
+        public async Task Update(ExchangeRateModel model)
         {
-            throw new System.NotImplementedException();
+            var currency = await _currencyAppService.Get(model.CurrencyCharCode);
+            if (currency == null)
+            {
+                throw new ApplicationException("Currency is invalid");
+            }
+            
+            if (model.BuyPrice > (currency.Value + (currency.Value / 100))
+                || model.BuyPrice < (currency.Value - (currency.Value / 100))
+                || model.SellPrice > (currency.Value + (currency.Value/ 100))
+                || model.SellPrice < (currency.Value) - (currency.Value / 100))
+            {
+                throw new ArgumentException("Exchange rate prices are not according to official rates");
+            }
+
+            var entity = await _exchangeRateDbService.Get(model.Id.Value);
+
+            entity.BuyPrice = model.BuyPrice.Value;
+            entity.SellPrice = model.SellPrice.Value;
+            await _exchangeRateDbService.Update();
         }
 
         public Task<ExchangeRateModel> Get(int id)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ExchangeOffice.Application.Models;
@@ -31,13 +32,23 @@ namespace ExchangeOffice.Application
         {
             throw new System.NotImplementedException();
         }
-
+        
         public async Task<CurrencyApiModel> Get(string charCode)
         {
-            var result = await _dbService.GetByQuery(c => c.CharCode == charCode);
+            var result = await _dbService
+                .GetByQuery(c => c.CharCode == charCode);
+            var value = new float();
+            
             if (result == null)
             {
                 var newCurrency = await _bnm.GetCurrencyByCode(charCode);
+                if (newCurrency == null)
+                {
+                    throw new ApplicationException("Given Currency is invalid");
+                }
+                
+                value = newCurrency.Value;
+                
                 result = await _dbService.Add(new Currency
                 {
                     Name = newCurrency.Name,
@@ -50,6 +61,7 @@ namespace ExchangeOffice.Application
             {
                 Name = result.Name,
                 CharCode = result.CharCode,
+                Value = value,
                 Id = result.Id
             };
         }
