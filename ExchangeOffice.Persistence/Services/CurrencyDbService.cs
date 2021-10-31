@@ -56,9 +56,12 @@ namespace ExchangeOffice.Persistence.Services
             return result;
         }
 
-        public Task<IEnumerable<Currency>> GetManyByQuery(Expression<Func<Currency, bool>> expression)
+        public async Task<IEnumerable<Currency>> GetManyByQuery(Expression<Func<Currency, bool>> expression)
         {
-            throw new NotImplementedException();
+            return await _appDbContext.Currencies
+                .Include(e => e.ExchangeRates.OrderBy(er => er.CreatedAt.Date))
+                .Where(expression)
+                .ToListAsync();
         }
 
         public IQueryable<Currency> Get(Expression<Func<Currency, bool>> queryExpression)

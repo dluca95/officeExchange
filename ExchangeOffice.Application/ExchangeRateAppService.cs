@@ -12,14 +12,12 @@ namespace ExchangeOffice.Application
     {
         private readonly IAppService<CurrencyApiModel, CurrencyQueryModel> _currencyAppService;
         private readonly IDbService<ExchangeRate> _exchangeRateDbService;
-      //  private readonly IDbService<Currency> _currencyService;
 
         public ExchangeRateAppService(IDbService<ExchangeRate> exchangeRateDbService,
             IAppService<CurrencyApiModel, CurrencyQueryModel> currencyAppService)
         {
             _exchangeRateDbService = exchangeRateDbService;
             _currencyAppService = currencyAppService;
-          //  _currencyService = currencyService;
         }
         
         public async Task<ExchangeRateModel> Add(ExchangeRateModel model)
@@ -29,7 +27,8 @@ namespace ExchangeOffice.Application
                 throw new ArgumentException("New Exchange rate requires both buy and sell price");
             }
 
-            var currency = await _currencyAppService.Get(model.CurrencyCharCode);
+            var currency = await _currencyAppService
+                .GetByQuery(new CurrencyQueryModel {CharCode = model.CurrencyCharCode});
 
             if (model.BuyPrice > (currency.Value + (currency.Value / 100))
                 || model.BuyPrice < (currency.Value - (currency.Value / 100))
@@ -55,16 +54,15 @@ namespace ExchangeOffice.Application
 
         public async Task Update(ExchangeRateModel model)
         {
-            var currency = await _currencyAppService.Get(model.CurrencyCharCode);
+            var currency = await _currencyAppService
+                .GetByQuery(new CurrencyQueryModel { CharCode = model.CurrencyCharCode});
+            
             if (currency == null)
             {
                 throw new ApplicationException("Currency is invalid");
             }
             
-            if (model.BuyPrice > (currency.Value + (currency.Value / 100))
-                || model.BuyPrice < (currency.Value - (currency.Value / 100))
-                || model.SellPrice > (currency.Value + (currency.Value/ 100))
-                || model.SellPrice < (currency.Value) - (currency.Value / 100))
+            if (!CurrencyHelper.ExchangeRateIsValid(model, currency))
             {
                 throw new ArgumentException("Exchange rate prices are not according to official rates");
             }
@@ -75,7 +73,6 @@ namespace ExchangeOffice.Application
             entity.SellPrice = model.SellPrice.Value;
             await _exchangeRateDbService.Update();
         }
-        
         public async Task<IEnumerable<ExchangeRateModel>> GetManyByQuery(ExchangeRateQueryModel queryModel)
         {
 
@@ -99,7 +96,7 @@ namespace ExchangeOffice.Application
                 queryModel.OnDate != null && e.CreatedAt.Date == queryModel.OnDate.Value.Date ||
                 queryModel.CurrencyCharCode != null && e.Currency.CharCode == queryModel.CurrencyCharCode);
                 
-
+            
             return new ExchangeRateModel
             {
                 BuyPrice = result.BuyPrice,
@@ -107,21 +104,6 @@ namespace ExchangeOffice.Application
                 CurrencyCharCode = result.Currency.CharCode,
                 Id = result.Id
             };
-        }
-
-        public Task<ExchangeRateModel> Get(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<ExchangeRateModel> Get(string identifier)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<ExchangeRateModel>> Get()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

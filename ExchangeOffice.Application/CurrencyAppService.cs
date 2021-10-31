@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ExchangeOffice.Application.Models;
 using ExchangeOffice.Persistence.Entities;
@@ -28,11 +29,6 @@ namespace ExchangeOffice.Application
             throw new System.NotImplementedException();
         }
 
-        public Task<CurrencyApiModel> Get(int id)
-        {
-            throw new System.NotImplementedException();
-        }
-        
         public async Task<CurrencyApiModel> Get(string charCode)
         {
             var result = await _dbService
@@ -66,24 +62,29 @@ namespace ExchangeOffice.Application
             };
         }
 
-        public Task<IEnumerable<CurrencyApiModel>> GetManyByQuery(CurrencyQueryModel queryModel)
+        public async Task<IEnumerable<CurrencyApiModel>> GetManyByQuery(CurrencyQueryModel queryModel)
         {
-            throw new NotImplementedException();
+            var result = await _dbService
+                .GetManyByQuery(e => e.CharCode == queryModel.CharCode);
+            
+            return result.Select(e => new CurrencyApiModel
+            {
+                CharCode = e.CharCode,
+                Name = e.Name,
+                Id = e.Id
+            });
         }
 
-        public Task<CurrencyApiModel> GetByQuery(CurrencyQueryModel queryModel)
+        public async Task<CurrencyApiModel> GetByQuery(CurrencyQueryModel queryModel)
         {
-            throw new NotImplementedException();
-        }
+            var result = await _dbService.GetByQuery(e => e.CharCode == queryModel.CharCode);
 
-        public Task<IEnumerable<CurrencyApiModel>> Get()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IEnumerable<CurrencyApiModel>> Get(CurrencyQueryModel queryModel)
-        {
-            throw new NotImplementedException();
+            return new CurrencyApiModel
+            {
+                Id = result.Id,
+                Name = result.Name,
+                CharCode = result.CharCode
+            };
         }
     }
 }
