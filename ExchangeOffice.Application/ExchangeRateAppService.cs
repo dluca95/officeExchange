@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ExchangeOffice.Application.Models;
 using ExchangeOffice.Persistence.Entities;
@@ -7,16 +8,18 @@ using ExchangeOffice.Persistence.Services;
 
 namespace ExchangeOffice.Application
 {
-    public class ExchangeRateAppService: IAppService<ExchangeRateModel>
+    public class ExchangeRateAppService: IAppService<ExchangeRateModel, ExchangeRateQueryModel>
     {
+        private readonly IAppService<CurrencyApiModel, CurrencyQueryModel> _currencyAppService;
         private readonly IDbService<ExchangeRate> _exchangeRateDbService;
-        private readonly IAppService<CurrencyApiModel> _currencyAppService;
+      //  private readonly IDbService<Currency> _currencyService;
 
         public ExchangeRateAppService(IDbService<ExchangeRate> exchangeRateDbService,
-            IAppService<CurrencyApiModel> currencyAppService)
+            IAppService<CurrencyApiModel, CurrencyQueryModel> currencyAppService)
         {
             _exchangeRateDbService = exchangeRateDbService;
             _currencyAppService = currencyAppService;
+          //  _currencyService = currencyService;
         }
         
         public async Task<ExchangeRateModel> Add(ExchangeRateModel model)
@@ -71,6 +74,39 @@ namespace ExchangeOffice.Application
             entity.BuyPrice = model.BuyPrice.Value;
             entity.SellPrice = model.SellPrice.Value;
             await _exchangeRateDbService.Update();
+        }
+        
+        public async Task<IEnumerable<ExchangeRateModel>> GetManyByQuery(ExchangeRateQueryModel queryModel)
+        {
+
+            var result = await _exchangeRateDbService
+                .GetManyByQuery(e => 
+                    queryModel.OnDate != null && e.CreatedAt.Date == queryModel.OnDate.Value.Date ||
+                    queryModel.CurrencyCharCode != null && e.Currency.CharCode == queryModel.CurrencyCharCode);
+            
+            return result.Select(e => new ExchangeRateModel
+                {
+                    Id = e.Id,
+                    BuyPrice = e.BuyPrice,
+                    CurrencyCharCode = e.Currency.CharCode,
+                    SellPrice = e.SellPrice
+                });
+        }
+
+        public async Task<ExchangeRateModel> GetByQuery(ExchangeRateQueryModel queryModel)
+        {
+            var result = await _exchangeRateDbService.GetByQuery(e =>
+                queryModel.OnDate != null && e.CreatedAt.Date == queryModel.OnDate.Value.Date ||
+                queryModel.CurrencyCharCode != null && e.Currency.CharCode == queryModel.CurrencyCharCode);
+                
+
+            return new ExchangeRateModel
+            {
+                BuyPrice = result.BuyPrice,
+                SellPrice = result.SellPrice,
+                CurrencyCharCode = result.Currency.CharCode,
+                Id = result.Id
+            };
         }
 
         public Task<ExchangeRateModel> Get(int id)

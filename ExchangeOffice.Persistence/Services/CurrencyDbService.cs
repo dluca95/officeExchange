@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -53,6 +54,11 @@ namespace ExchangeOffice.Persistence.Services
             var result = await _appDbContext.Currencies.FirstOrDefaultAsync(expression);
           
             return result;
+        }
+
+        public Task<IEnumerable<Currency>> GetManyByQuery(Expression<Func<Currency, bool>> expression)
+        {
+            throw new NotImplementedException();
         }
 
         public IQueryable<Currency> Get(Expression<Func<Currency, bool>> queryExpression)

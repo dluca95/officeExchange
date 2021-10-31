@@ -30,8 +30,8 @@ namespace ExchangeOffice
             services.AddDbContext<AppDbContext>();
             services.AddTransient<IDbService<Currency>, CurrencyDbService>();
             services.AddTransient<IDbService<ExchangeRate>, ExchangeRateDbService>();
-            services.AddTransient<IAppService<ExchangeRateModel>, ExchangeRateAppService>();
-            services.AddTransient<IAppService<CurrencyApiModel>, CurrencyAppService>();
+            services.AddTransient<IAppService<ExchangeRateModel, ExchangeRateQueryModel>, ExchangeRateAppService>();
+            services.AddTransient<IAppService<CurrencyApiModel, CurrencyQueryModel>, CurrencyAppService>();
             services.AddMemoryCache();
             services.AddTransient<BnmService>();
             services.AddHttpClient();

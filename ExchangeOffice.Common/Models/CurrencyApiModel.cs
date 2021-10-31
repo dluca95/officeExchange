@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ExchangeOffice.Application.Models
 {
     public class CurrencyApiModel
@@ -7,5 +9,7 @@ namespace ExchangeOffice.Application.Models
         public string CharCode { get; set; }
         
         public float? Value { get; set; }
+
+        public IEnumerable<ExchangeRateModel> ExchangeRateModels => new List<ExchangeRateModel>();
     }
 }

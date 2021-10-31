@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -51,7 +52,17 @@ namespace ExchangeOffice.Persistence.Services
 
         public async Task<ExchangeRate> GetByQuery(Expression<Func<ExchangeRate, bool>> expression)
         {
-            return await _appDbContext.CurrencyExchangeRates.FirstAsync(expression);
+            return await _appDbContext.CurrencyExchangeRates
+                .Include(e => e.Currency)
+                .FirstAsync(expression);
+        }
+
+        public async Task<IEnumerable<ExchangeRate>> GetManyByQuery(Expression<Func<ExchangeRate, bool>> expression)
+        {
+            return await _appDbContext.CurrencyExchangeRates
+                .Include(e => e.Currency)
+                .Where(expression)
+                .ToListAsync();
         }
 
         public IQueryable<ExchangeRate> Get(Expression<Func<ExchangeRate, bool>> queryExpression)

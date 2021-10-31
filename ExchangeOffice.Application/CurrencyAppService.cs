@@ -7,7 +7,7 @@ using ExchangeOffice.Persistence.Services;
 
 namespace ExchangeOffice.Application
 {
-    public class CurrencyAppService: IAppService<CurrencyApiModel>
+    public class CurrencyAppService: IAppService<CurrencyApiModel, CurrencyQueryModel>
     {
         private readonly IDbService<Currency> _dbService;
         private readonly BnmService _bnm;
@@ -66,9 +66,24 @@ namespace ExchangeOffice.Application
             };
         }
 
+        public Task<IEnumerable<CurrencyApiModel>> GetManyByQuery(CurrencyQueryModel queryModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CurrencyApiModel> GetByQuery(CurrencyQueryModel queryModel)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IEnumerable<CurrencyApiModel>> Get()
         {
             throw new System.NotImplementedException();
+        }
+
+        public Task<IEnumerable<CurrencyApiModel>> Get(CurrencyQueryModel queryModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

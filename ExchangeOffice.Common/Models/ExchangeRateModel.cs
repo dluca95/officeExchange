@@ -1,3 +1,5 @@
+using System;
+
 namespace ExchangeOffice.Application.Models
 {
     public class ExchangeRateModel
@@ -6,5 +8,7 @@ namespace ExchangeOffice.Application.Models
         public float? BuyPrice { get; set; }
         public float? SellPrice { get; set; }
         public string CurrencyCharCode { get; set; }
+        
+        public DateTime OnDate { get; set; }
     }
 }

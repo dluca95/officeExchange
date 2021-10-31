@@ -1,8 +1,7 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ExchangeOffice.Application;
 using ExchangeOffice.Application.Models;
-using ExchangeOffice.Persistence.Entities;
-using ExchangeOffice.Persistence.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeOffice.Controllers
@@ -11,9 +10,9 @@ namespace ExchangeOffice.Controllers
     [Route("[controller]")]
     public class ExchangeOfficeController: ControllerBase
     {
-        private readonly IAppService<ExchangeRateModel> _exchangeRateAppService;
+        private readonly IAppService<ExchangeRateModel, ExchangeRateQueryModel> _exchangeRateAppService;
         
-        public ExchangeOfficeController( IAppService<ExchangeRateModel> exchangeRateAppService)
+        public ExchangeOfficeController(IAppService<ExchangeRateModel, ExchangeRateQueryModel> exchangeRateAppService)
         {
             _exchangeRateAppService = exchangeRateAppService;
         }
@@ -31,5 +30,22 @@ namespace ExchangeOffice.Controllers
         {
             await _exchangeRateAppService.Update(model);
         }
+
+        [HttpGet]
+        [Route("exchange-rate")]
+        public async Task<ExchangeRateModel> GetExchangeRateByDateAndCurrency([FromQuery] ExchangeRateQueryModel model)
+        {
+            var result = await _exchangeRateAppService.GetByQuery(model);
+            
+            return result;
+        }
+
+        [HttpGet]
+        [Route("exchange-rates")]
+        public async Task<IEnumerable<ExchangeRateModel>> GetExchangeRateByDate([FromQuery] ExchangeRateQueryModel model)
+        {
+            return await _exchangeRateAppService.GetManyByQuery(model);
+        }
+        
     }
 }
