@@ -5,7 +5,7 @@ namespace ExchangeOffice.Application
 {
     public static class CurrencyHelper
     {
-        public static bool IsExchangeRateValid(ExchangeRateModel exchangeRateModel, CurrencyApiModel currencyApiModel)
+        public static bool ExchangeRateIsValid(ExchangeRateModel exchangeRateModel, CurrencyApiModel currencyApiModel)
         {
             return exchangeRateModel.BuyPrice < (currencyApiModel.Value + (currencyApiModel.Value / 100))
                    || exchangeRateModel.BuyPrice > (currencyApiModel.Value - (currencyApiModel.Value / 100))

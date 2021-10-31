@@ -63,6 +63,20 @@ namespace ExchangeOffice.Application
             return currencyResult.FirstOrDefault(r => r.CharCode == charCode);
         }
 
+        public async Task<float> GetCurrencyValue(string charCode)
+        {
+            var key = $"{DateTime.Now.Day}.{DateTime.Now.Month}.{DateTime.Now.Year}";
+            if (_cache.TryGetValue(key, out List<Valute> cachedCurrency))
+            {
+                var result = cachedCurrency.FirstOrDefault(c => c.CharCode == charCode);
+
+                if (result != null)
+                    return result.Value;
+            }
+
+            return new float();
+        }
+
     }
     
     public class Valute

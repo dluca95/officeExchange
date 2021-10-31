@@ -5,4 +5,8 @@
         <RootNamespace>ExchangeOffice.Application</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ExchangeOffice.Persistence\ExchangeOffice.Persistence.csproj" />
+    </ItemGroup>
+
 </Project>

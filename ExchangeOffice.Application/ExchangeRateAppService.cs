@@ -12,12 +12,14 @@ namespace ExchangeOffice.Application
     {
         private readonly IAppService<CurrencyApiModel, CurrencyQueryModel> _currencyAppService;
         private readonly IDbService<ExchangeRate> _exchangeRateDbService;
+        private readonly BnmService _bnmService;
 
         public ExchangeRateAppService(IDbService<ExchangeRate> exchangeRateDbService,
-            IAppService<CurrencyApiModel, CurrencyQueryModel> currencyAppService)
+            IAppService<CurrencyApiModel, CurrencyQueryModel> currencyAppService, BnmService bnmService)
         {
             _exchangeRateDbService = exchangeRateDbService;
             _currencyAppService = currencyAppService;
+            _bnmService = bnmService;
         }
         
         public async Task<ExchangeRateModel> Add(ExchangeRateModel model)
@@ -29,11 +31,12 @@ namespace ExchangeOffice.Application
 
             var currency = await _currencyAppService
                 .GetByQuery(new CurrencyQueryModel {CharCode = model.CurrencyCharCode});
-
-            if (model.BuyPrice > (currency.Value + (currency.Value / 100))
-                || model.BuyPrice < (currency.Value - (currency.Value / 100))
-                || model.SellPrice > (currency.Value + (currency.Value/ 100))
-                || model.SellPrice < (currency.Value) - (currency.Value / 100))
+            var currencyValue = await _bnmService.GetCurrencyValue(model.CurrencyCharCode);
+            
+            if (currencyValue == 0.00)
+                throw new ApplicationException("No currency founds");
+            
+            if (!CurrencyHelper.ExchangeRateIsValid(model, currency))
             {
                 throw new ArgumentException("Exchange rate prices are not according to official rates");
             } 
@@ -54,6 +57,9 @@ namespace ExchangeOffice.Application
 
         public async Task Update(ExchangeRateModel model)
         {
+            if (!model.Id.HasValue)
+                throw new ArgumentException("No Id for Exchange rate");
+            
             var currency = await _currencyAppService
                 .GetByQuery(new CurrencyQueryModel { CharCode = model.CurrencyCharCode});
             
@@ -69,8 +75,9 @@ namespace ExchangeOffice.Application
 
             var entity = await _exchangeRateDbService.Get(model.Id.Value);
 
-            entity.BuyPrice = model.BuyPrice.Value;
-            entity.SellPrice = model.SellPrice.Value;
+            entity.BuyPrice = model.BuyPrice ?? entity.BuyPrice;
+            entity.SellPrice = model.SellPrice ?? entity.SellPrice;
+            
             await _exchangeRateDbService.Update();
         }
         public async Task<IEnumerable<ExchangeRateModel>> GetManyByQuery(ExchangeRateQueryModel queryModel)
@@ -80,14 +87,8 @@ namespace ExchangeOffice.Application
                 .GetManyByQuery(e => 
                     queryModel.OnDate != null && e.CreatedAt.Date == queryModel.OnDate.Value.Date ||
                     queryModel.CurrencyCharCode != null && e.Currency.CharCode == queryModel.CurrencyCharCode);
-            
-            return result.Select(e => new ExchangeRateModel
-                {
-                    Id = e.Id,
-                    BuyPrice = e.BuyPrice,
-                    CurrencyCharCode = e.Currency.CharCode,
-                    SellPrice = e.SellPrice
-                });
+
+            return result.Select(e => new ExchangeRateModel(e));
         }
 
         public async Task<ExchangeRateModel> GetByQuery(ExchangeRateQueryModel queryModel)
@@ -95,15 +96,9 @@ namespace ExchangeOffice.Application
             var result = await _exchangeRateDbService.GetByQuery(e =>
                 queryModel.OnDate != null && e.CreatedAt.Date == queryModel.OnDate.Value.Date ||
                 queryModel.CurrencyCharCode != null && e.Currency.CharCode == queryModel.CurrencyCharCode);
-                
-            
-            return new ExchangeRateModel
-            {
-                BuyPrice = result.BuyPrice,
-                SellPrice = result.SellPrice,
-                CurrencyCharCode = result.Currency.CharCode,
-                Id = result.Id
-            };
+
+
+            return new ExchangeRateModel(result);
         }
     }
 }
