@@ -5,11 +5,12 @@ namespace ExchangeOffice.Application.Models
 {
     public class CurrencyApiModel
     {
-        public CurrencyApiModel(Currency currency)
+        public CurrencyApiModel(Currency currency, float? value = null)
         {
             Id = currency.Id;
             Name = currency.Name;
             CharCode = currency.CharCode;
+            Value = value;
         }
         
         public int? Id { get; set; }

@@ -29,33 +29,6 @@ namespace ExchangeOffice.Application
             throw new System.NotImplementedException();
         }
 
-        // public async Task<CurrencyApiModel> Get(string charCode)
-        // {
-        //     var result = await _dbService
-        //         .GetByQuery(c => c.CharCode == charCode);
-        //     var value = new float();
-        //     
-        //     if (result == null)
-        //     {
-        //         var newCurrency = await _bnm.GetCurrencyByCode(charCode);
-        //         if (newCurrency == null)
-        //         {
-        //             throw new ApplicationException("Given Currency is invalid");
-        //         }
-        //         
-        //         value = newCurrency.Value;
-        //         
-        //         result = await _dbService.Add(new Currency
-        //         {
-        //             Name = newCurrency.Name,
-        //             CharCode = newCurrency.CharCode,
-        //             Nominal = newCurrency.Nominal
-        //         });
-        //     }
-        //
-        //     return new CurrencyApiModel(result);
-        // }
-
         public async Task<IEnumerable<CurrencyApiModel>> GetManyByQuery(CurrencyQueryModel queryModel)
         {
             var result = await _dbService
@@ -68,28 +41,23 @@ namespace ExchangeOffice.Application
         {
             var result = await _dbService
                 .GetByQuery(e => e.CharCode == queryModel.CharCode);
+
+            if (result != null) return new CurrencyApiModel(result, await _bnm.GetCurrencyValue(queryModel.CharCode));
             
-            var value = new float();
-            
-            if (result == null)
+            var newCurrency = await _bnm.GetCurrencyByCode(queryModel.CharCode);
+            if (newCurrency == null)
             {
-                var newCurrency = await _bnm.GetCurrencyByCode(queryModel.CharCode);
-                if (newCurrency == null)
-                {
-                    throw new ApplicationException("Given Currency is invalid");
-                }
-                
-                value = newCurrency.Value;
-                
-                result = await _dbService.Add(new Currency
-                {
-                    Name = newCurrency.Name,
-                    CharCode = newCurrency.CharCode,
-                    Nominal = newCurrency.Nominal
-                });
+                throw new ApplicationException("Given Currency is invalid");
             }
-            
-            return new CurrencyApiModel(result);
+                
+            result = await _dbService.Add(new Currency
+            {
+                Name = newCurrency.Name,
+                CharCode = newCurrency.CharCode,
+                Nominal = newCurrency.Nominal,
+            });
+
+            return new CurrencyApiModel(result, await _bnm.GetCurrencyValue(queryModel.CharCode));
         }
     }
 }

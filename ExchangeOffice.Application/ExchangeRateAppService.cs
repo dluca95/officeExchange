@@ -96,8 +96,7 @@ namespace ExchangeOffice.Application
             var result = await _exchangeRateDbService.GetByQuery(e =>
                 queryModel.OnDate != null && e.CreatedAt.Date == queryModel.OnDate.Value.Date ||
                 queryModel.CurrencyCharCode != null && e.Currency.CharCode == queryModel.CurrencyCharCode);
-
-
+            
             return new ExchangeRateModel(result);
         }
     }
