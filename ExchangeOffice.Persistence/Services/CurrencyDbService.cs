@@ -48,6 +48,13 @@ namespace ExchangeOffice.Persistence.Services
             return await _appDbContext.Currencies.FirstAsync(e => e.Id == currencyId);
         }
 
+        public async Task<Currency> GetByQuery(Expression<Func<Currency, bool>> expression)
+        {
+            var result = await _appDbContext.Currencies.FirstOrDefaultAsync(expression);
+          
+            return result;
+        }
+
         public IQueryable<Currency> Get(Expression<Func<Currency, bool>> queryExpression)
         {
             return _appDbContext.Currencies.Where(queryExpression);

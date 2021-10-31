@@ -24,6 +24,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ExchangeOffice.Application\ExchangeOffice.Application.csproj" />
+      <ProjectReference Include="..\ExchangeOffice.Common\ExchangeOffice.Common.csproj" />
       <ProjectReference Include="..\ExchangeOffice.Persistence\ExchangeOffice.Persistence.csproj" />
     </ItemGroup>
 

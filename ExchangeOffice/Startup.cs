@@ -1,3 +1,5 @@
+using ExchangeOffice.Application;
+using ExchangeOffice.Application.Models;
 using ExchangeOffice.Persistence;
 using ExchangeOffice.Persistence.Entities;
 using ExchangeOffice.Persistence.Services;
@@ -28,14 +30,19 @@ namespace ExchangeOffice
             services.AddDbContext<AppDbContext>();
             services.AddTransient<IDbService<Currency>, CurrencyDbService>();
             services.AddTransient<IDbService<ExchangeRate>, ExchangeRateDbService>();
+            services.AddTransient<IAppService<ExchangeRateModel>, ExchangeRateAppService>();
+            services.AddTransient<IAppService<CurrencyApiModel>, CurrencyAppService>();
+            services.AddMemoryCache();
+            services.AddTransient<BnmService>();
             services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppDbContext dbContext)
         {
             if (env.IsDevelopment())
             {
+                dbContext.Database.EnsureCreated();
                 app.UseDeveloperExceptionPage();
             }
             else

@@ -17,6 +17,7 @@ namespace ExchangeOffice.Persistence.Services
         public void DeleteMany();
         
         public Task<TEntity> Get(int entityId);
+        public Task<TEntity> GetByQuery(Expression<Func<TEntity, bool>> expression);
         
         public IQueryable<TEntity> Get(Expression<Func<TEntity, bool>> queryExpression);
     }

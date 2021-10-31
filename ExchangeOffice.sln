@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeOffice", "ExchangeO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeOffice.Persistence", "ExchangeOffice.Persistence\ExchangeOffice.Persistence.csproj", "{7B93EE9D-8DFC-40BC-92AC-539E666FF9F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeOffice.Common", "ExchangeOffice.Common\ExchangeOffice.Common.csproj", "{BC42994D-84FE-4128-97DC-80CCB9D4ADB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeOffice.Application", "ExchangeOffice.Application\ExchangeOffice.Application.csproj", "{680308D7-C89B-4615-85EE-D496B2D2F662}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{7B93EE9D-8DFC-40BC-92AC-539E666FF9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B93EE9D-8DFC-40BC-92AC-539E666FF9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B93EE9D-8DFC-40BC-92AC-539E666FF9F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC42994D-84FE-4128-97DC-80CCB9D4ADB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC42994D-84FE-4128-97DC-80CCB9D4ADB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC42994D-84FE-4128-97DC-80CCB9D4ADB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC42994D-84FE-4128-97DC-80CCB9D4ADB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{680308D7-C89B-4615-85EE-D496B2D2F662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{680308D7-C89B-4615-85EE-D496B2D2F662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{680308D7-C89B-4615-85EE-D496B2D2F662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{680308D7-C89B-4615-85EE-D496B2D2F662}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

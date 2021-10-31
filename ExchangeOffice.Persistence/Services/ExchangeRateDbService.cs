@@ -49,6 +49,11 @@ namespace ExchangeOffice.Persistence.Services
             return await _appDbContext.CurrencyExchangeRates.FirstAsync(e => e.Id == exchangeRateId);
         }
 
+        public async Task<ExchangeRate> GetByQuery(Expression<Func<ExchangeRate, bool>> expression)
+        {
+            return await _appDbContext.CurrencyExchangeRates.FirstAsync(expression);
+        }
+
         public IQueryable<ExchangeRate> Get(Expression<Func<ExchangeRate, bool>> queryExpression)
         {
             return _appDbContext.CurrencyExchangeRates.Where(queryExpression);
