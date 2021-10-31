@@ -2,10 +2,8 @@ using System.Collections.Generic;
 
 namespace ExchangeOffice.Persistence.Entities
 {
-    public class Currency
+    public class Currency: EntityModel
     {
-        public int Id { get; set; }
-        
         public  string Name { get; set; }
         
         public string CharCode { get; set; }

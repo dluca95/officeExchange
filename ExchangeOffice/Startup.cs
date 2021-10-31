@@ -1,4 +1,6 @@
 using ExchangeOffice.Persistence;
+using ExchangeOffice.Persistence.Entities;
+using ExchangeOffice.Persistence.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -24,6 +26,8 @@ namespace ExchangeOffice
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
             services.AddDbContext<AppDbContext>();
+            services.AddTransient<IDbService<Currency>, CurrencyDbService>();
+            services.AddTransient<IDbService<ExchangeRate>, ExchangeRateDbService>();
             services.AddHttpClient();
         }
 
