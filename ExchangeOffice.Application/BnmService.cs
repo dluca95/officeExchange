@@ -24,11 +24,11 @@ namespace ExchangeOffice.Application
         public async Task<IEnumerable<Valute>> GetCurrenciesForDate(DateTime? date)
         {
             date ??= DateTime.Now;
-            var key = $"{date.Value.Day}.{date.Value.Month}.{date.Value.Year}";
+            var key = ParseDate(date.Value);
 
             if (_cache.TryGetValue(key, out List<Valute> cachedCurrency)) return cachedCurrency;
             
-            var url = $"{bnmUrl}{date.Value.Day}.{date.Value.Month}.{date.Value.Year}";
+            var url = $"{bnmUrl}{key}";
             var result = await _httpClient.GetAsync(url);
             var resBody = await result.Content.ReadAsStringAsync();
             XmlRootAttribute xRoot = new XmlRootAttribute
@@ -46,10 +46,10 @@ namespace ExchangeOffice.Application
                 
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 // Keep in cache for this time, reset time if accessed.
-                .SetSlidingExpiration(TimeSpan.FromSeconds(3));
+                .SetSlidingExpiration(TimeSpan.FromSeconds(86400));
 
             // Save data in cache.
-            _cache.Set($"{DateTime.Now.Day}.${DateTime.Now.Month}.${DateTime.Now.Year}",
+            _cache.Set($"{key}",
                 cachedCurrency, 
                 cacheEntryOptions);
 
@@ -65,16 +65,30 @@ namespace ExchangeOffice.Application
 
         public async Task<float> GetCurrencyValue(string charCode)
         {
-            var key = $"{DateTime.Now.Day}.{DateTime.Now.Month}.{DateTime.Now.Year}";
+            var key = ParseDate(DateTime.Now);
+            Valute result;
             if (_cache.TryGetValue(key, out List<Valute> cachedCurrency))
             {
-                var result = cachedCurrency.FirstOrDefault(c => c.CharCode == charCode);
+                result = cachedCurrency.FirstOrDefault(c => c.CharCode == charCode);
 
                 if (result != null)
                     return result.Value;
             }
+       
+            var currencies = await GetCurrenciesForDate(DateTime.Now);
+            result = currencies.FirstOrDefault(c => c.CharCode == charCode);
 
-            return new float();
+            return result?.Value ?? new float();
+
+        }
+
+        private string ParseDate(DateTime date)
+        {
+            var day = date.Day > 10 ? date.Day.ToString() : $"0{date.Day}";
+            var month = date.Month > 10 ? date.Month.ToString() : $"0{date.Month}";
+            var year = date.Year;
+
+            return $"{day}.{month}.{year}";
         }
 
     }

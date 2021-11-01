@@ -45,12 +45,13 @@ namespace ExchangeOffice.Application
             {
                 BuyPrice = model.BuyPrice.Value,
                 SellPrice = model.SellPrice.Value,
-                CreatedAt = DateTime.Now,
-                CurrencyId = currency.Id ?? 0
+                CurrencyId = currency.Id ?? 0,
+                CreatedAt = DateTime.Now
             };
 
             var result = await _exchangeRateDbService.Add(newExchangeRate);
             model.Id = result.Id;
+            model.OnDate = result.CreatedAt;
 
             return model;
         }
